@@ -1,3 +1,6 @@
+---
+import "../styles/home.scss";
+---
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -37,6 +40,9 @@
     <link rel="icon" type="image/png" href="./assets/favicon/apple-icon-60x60.png">
     <link rel="apple-touch-icon" href="./assets/images/pwa/icon_512.png">
     <link rel="manifest" href="./manifest.json" />
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="./assets/css/app.min.css?v=2026.1.0">
     <!-- <script>
     window.onload = () => {
@@ -45,7 +51,7 @@
         }
     }
     </script> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tarteaucitronjs/1.9.9/tarteaucitron.min.js"
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tarteaucitronjs/1.9.9/tarteaucitron.min.js"
         integrity="sha512-MOLaXaDox9adkWOYzZxVivlDu2c9kyxXbTQPL7/3ZHmkcVPXDnH+5drW0PIjhycAyajbQsZ2QaCC08l098VFtQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./assets/js/cookies/cookies.min.js?v=2026.0.0" defer></script>
@@ -56,7 +62,7 @@
     <script type="module" src="./assets/js/app.js?v=2026.0.0" defer></script>
         </head>
 
-<body class="accueil ">
+<body class="accueil home">
     <div id="btnDenno" class="h3 grobold bgYellow boxShadow">D <span>?</span></div>
 <div id="dennoBot" class="boxShadow hide">
     <div class="grid-container">
@@ -97,58 +103,9 @@
     </div>
 </div>            
 
-    <header>
+    <header class="home__header">
         <div class="grid-container">
-            <script type="module">
-    const now = new Date();
-    normaliserHeures(now);
-
-    import {
-        events
-    } from "./../../date.js";
-
-    function normaliserHeures(date) {
-        date.setHours(0, 0, 0, 0);
-    }
-
-    function parserDateUS(dateStr) {
-        const [month, day, year] = dateStr.split('/').map(Number);
-        const d = new Date(year, month - 1, day);
-        normaliserHeures(d);
-        return d;
-    }
-
-    function estDateValide(eventDate) {
-        if (Array.isArray(eventDate)) {
-            const [dateStart, dateEnd] = eventDate.map(parserDateUS);
-            return dateStart <= now && now <= dateEnd;
-        } else {
-            const date = parserDateUS(eventDate);
-            return now.getTime() === date.getTime();
-        }
-    }
-
-    const balise = document.querySelector('#horaires small');
-
-    if (balise) {
-        let trouve = false;
-
-        events.some(element => {
-            if (estDateValide(element.date)) {
-                console.log(element.description);
-                balise.innerText = element.description;
-                trouve = true;
-                return true;
-            }
-            return false;
-        });
-
-        if (!trouve) {
-            balise.innerText = "Parc fermé aujourd'hui";
-        }
-    }
-</script>
-
+            <script type="module" src="./assets/js/home-hours.js" defer></script>
 
 
 <div id='horaires'>
