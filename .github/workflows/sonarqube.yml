@@ -34,7 +34,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build --if-present
-      - run: pnpm test --if-present
+      - run: pnpm run test:coverage --if-present
 
       - name: Validate Sonar env
         if: ${{ env.SONAR_TOKEN == '' || env.SONAR_HOST_URL == '' }}

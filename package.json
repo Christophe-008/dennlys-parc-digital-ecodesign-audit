@@ -11,13 +11,17 @@
     "build": "astro build",
     "preview": "astro preview",
     "serve:lhci": "astro preview --host 127.0.0.1 --port 5173",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "astro": "^6.3.8"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.7",
     "sass": "^1.100.0",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression": "^0.5.1",
+    "vitest": "^4.1.7"
   }
 }
