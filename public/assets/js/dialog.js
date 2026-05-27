@@ -298,7 +298,7 @@ function initAnswerBis() {
     answersBis.appendChild(option);
   });
 
-  inputAnswerBis.addEventListener("change", async (event) => {
+  inputAnswerBis.addEventListener("change", (event) => {
     event.preventDefault();
     const answerChoice = event.target.value;
     const selected = dialog.find((item) => item.answer === answerChoice);
@@ -306,7 +306,7 @@ function initAnswerBis() {
 
     ensureVisibleAnswerArea();
     if (answerBox) answerBox.textContent = answerChoice;
-    await typeWriter([selected], responseBox);
+    void typeWriter([selected], responseBox);
   });
 }
 

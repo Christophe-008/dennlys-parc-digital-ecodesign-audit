@@ -1,7 +1,7 @@
 const now = new Date();
 normalizeHours(now);
 
-import { events } from '/date.js';
+import { events } from '../../date.js';
 
 function normalizeHours(date) {
   date.setHours(0, 0, 0, 0);
