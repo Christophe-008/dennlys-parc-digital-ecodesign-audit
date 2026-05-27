@@ -1,0 +1,72 @@
+---
+import "../../styles/home.scss";
+---
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <!-- Meta Pixel Code -->
+    <!-- <script>
+        ! function(f, b, e, v, n, t, s) {
+            if (f.fbq) return;
+            n = f.fbq = function() {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = '2.0';
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1193614599517450');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1193614599517450&ev=PageView&noscript=1" /></noscript> -->
+    <!-- End Meta Pixel Code -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:image" content="https://www.dennlys-parc.com/assets/images/2025/jeanbarq2025.jpg" />
+    <title>Bienvenue à Dennlys Parc</title>
+    <link rel="icon" type="image/png" href="./assets/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" href="./assets/images/pwa/icon_512.png">
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="./assets/css/app.min.css?v=2026.1.0">
+    <!-- <script>
+    window.onload = () => {
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    }
+    </script> -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tarteaucitronjs/1.9.9/tarteaucitron.min.js"
+        integrity="sha512-MOLaXaDox9adkWOYzZxVivlDu2c9kyxXbTQPL7/3ZHmkcVPXDnH+5drW0PIjhycAyajbQsZ2QaCC08l098VFtQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="./assets/js/cookies/cookies.min.js?v=2026.0.0" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" defer></script>
+            <script type="text/javascript" src="./utils/fbfeed/core/js/cff.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/gh/dixonandmoe/rellax@master/rellax.min.js"></script>
+    <script src="./assets/js/dialog.js" type="module" defer></script>
+    <script type="module" src="./assets/js/app.js?v=2026.0.0" defer></script>
+        </head>
+
+<body class="accueil home">
+  <slot name="bot" />
+  <slot name="header" />
+  <slot />
+  <slot name="footer" />
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+/*
+ * Home maintainability layer.
+ * Keeps original visual output while adding stable BEM-style hooks.
+ */
+
+.home {
+  &__header {
+    position: relative;
+  }
+
+  &__section {
+    position: relative;
+  }
+
+  &__cta {
+    display: inline-block;
+  }
+}
