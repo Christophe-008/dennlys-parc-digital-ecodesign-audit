@@ -1,43 +1,96 @@
-# Astro Starter Kit: Minimal
+# Dennlys Parc - Reproduction et Optimisation Eco-Conception (Astro)
 
-```sh
-pnpm create astro@latest -- --template minimal
-```
+## Contexte
+Ce projet reproduit la page d'accueil de `dennlys-parc.com` dans Astro, puis applique des optimisations de performance et d'eco-conception sans casser l'identite visuelle.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Objectifs
+- Conserver un rendu visuel tres proche du site source.
+- Ameliorer les scores Lighthouse (surtout Performance).
+- Reduire l'empreinte EcoIndex via:
+  - moins de poids au chargement initial,
+  - moins de JavaScript execute au demarrage,
+  - moins de requetes critiques.
 
-## 🚀 Project Structure
+## Etat actuel
+- Clone de la home integre dans Astro avec assets locaux (`public/assets`, `public/utils`, `public/date.js`).
+- Police originale (`GROBOLD`) integree localement.
+- Refactor structurel en composants Astro (`src/components/home/*`).
+- Compression build active (gzip + brotli) + compression HTML.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Optimisations deja appliquees (axe EcoIndex)
+1. **Compression de sortie**
+- `astro.config.mjs` active `compressHTML`.
+- `vite-plugin-compression` genere `.gz` et `.br`.
 
+2. **Reduction du cout initial de la page**
+- Script inline horaires externalise (`home-hours.js`).
+- Script scroll externalise (`home-scroll-effects.js`).
+
+3. **Deferral des contenus lourds tiers**
+- Le bloc Facebook inline volumineux a ete retire du HTML initial.
+- Le feed Facebook est charge a la demande via:
+  - `public/assets/js/home-facebook-feed.js`
+  - `public/assets/data/facebook-feed.html`
+- Le script `cff.js` n'est plus charge globalement au boot, mais uniquement quand la section Facebook devient visible.
+
+4. **Deferral newsletter**
+- Le formulaire Mailjet est charge uniquement a l'approche de la section via `home-newsletter.js`.
+
+## Architecture
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+  components/home/
+    HomeLayout.astro
+    HomeBot.astro
+    HomeHeader.astro
+    HomeMain.astro
+    HomeFooter.astro
+  pages/
+    index.astro
+  styles/
+    home.scss
+
+public/
+  assets/
+    css/
+    js/
+    data/
+    images/
+    fonts/
+    video/
+  utils/fbfeed/
+  date.js
+  manifest.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Branches Git
+- `main`: base clone de la home.
+- `optimisation`: travaux d'optimisation Lighthouse / EcoIndex.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Commandes utiles
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm preview
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Mesure et suivi qualite
+### Lighthouse local
+Le projet contient `.lighthouserc.json` (desktop) pour verifier les categories principales.
 
-## 🧞 Commands
+### Cibles recommendees (ordre prioritaire)
+1. Performance Lighthouse >= 90
+2. Diminution du poids initial HTML/JS/CSS
+3. Limitation des scripts tiers en chemin critique
+4. Stabilite visuelle (CLS) et vitesse d'affichage (LCP)
 
-All commands are run from the root of the project, from a terminal:
+## Prochaines etapes d'optimisation (proposees)
+1. Migrer les images critiques de la hero vers `astro:assets` (`<Image />`) avec dimensions explicites.
+2. Ajouter des placeholders/squelettes pour Facebook/Newsletter (meilleure perception UX).
+3. Etendre la logique "load on visible" aux autres integrations tierces non critiques.
+4. Mettre en place une comparaison automatisee des scores Lighthouse avant/apres (CI).
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Contraintes projet
+- Priorite: maintenir le rendu visuel du site d'origine.
+- Les optimisations se font de maniere progressive et reversible (commits atomiques).
