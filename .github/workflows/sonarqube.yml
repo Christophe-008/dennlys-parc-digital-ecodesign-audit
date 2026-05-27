@@ -36,6 +36,13 @@ jobs:
       - run: pnpm run build --if-present
       - run: pnpm test --if-present
 
+      - name: Validate Sonar env
+        if: ${{ env.SONAR_TOKEN == '' || env.SONAR_HOST_URL == '' }}
+        run: |
+          echo "SONAR_TOKEN and/or SONAR_HOST_URL is missing."
+          echo "Configure repository secrets to enable Sonar scan."
+          exit 1
+
       - name: SonarQube scan
         if: ${{ env.SONAR_TOKEN != '' && env.SONAR_HOST_URL != '' }}
         uses: SonarSource/sonarqube-scan-action@v8
