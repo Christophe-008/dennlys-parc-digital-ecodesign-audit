@@ -70,9 +70,10 @@ jobs:
             -v "$PWD/artifacts/greenit/input:/app/input" \
             -v "$PWD/artifacts/greenit/output:/app/output" \
             -e TZ=Europe/Paris \
+            -e PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
             --name GreenIT-Analysis \
             greenit-analysis-cli \
-            sh -lc "npx puppeteer browsers install chrome && greenit analyse /app/input/url.yaml /app/output/report.html --format html --max_tab=1 --timeout=60000 --retry=1 --headless true --language fr"
+            greenit analyse /app/input/url.yaml /app/output/report.html --format html --max_tab=1 --timeout=60000 --retry=1 --headless true --language fr
 
       - name: Upload GreenIT report
         if: always()
