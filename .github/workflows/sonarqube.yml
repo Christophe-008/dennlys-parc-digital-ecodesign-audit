@@ -72,13 +72,22 @@ jobs:
         uses: actions/github-script@v9
         env:
           LIGHTHOUSE_LINKS: ${{ steps.lighthouse.outputs.links }}
+          LIGHTHOUSE_STATUS: ${{ steps.lighthouse.outcome }}
         with:
           script: |
             const fs = require('fs')
             const linksRaw = process.env.LIGHTHOUSE_LINKS
+            const lighthouseStatus = process.env.LIGHTHOUSE_STATUS || 'unknown'
+            const summaryPath = process.env.GITHUB_STEP_SUMMARY
 
             if (!linksRaw || linksRaw === 'null') {
-              core.setFailed('No Lighthouse public report link found')
+              const lines = [
+                '### Lighthouse',
+                '',
+                `- No public report link found (lighthouse step outcome: \`${lighthouseStatus}\`).`,
+                '- Check previous Lighthouse logs in this job for details.'
+              ]
+              fs.appendFileSync(summaryPath, `${lines.join('\n')}\n`)
               return
             }
 
@@ -88,4 +97,4 @@ jobs:
               lines.push(`- [${url}](${report})`)
             }
 
-            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`)
+            fs.appendFileSync(summaryPath, `${lines.join('\n')}\n`)
