@@ -3,6 +3,14 @@
 ## Contexte
 Ce projet reproduit la page d'accueil de `dennlys-parc.com` dans Astro, puis applique des optimisations de performance et d'eco-conception sans casser l'identite visuelle.
 
+## Projet deploye
+- https://dennlys-parc-digital-ecodesign-audi.vercel.app/
+
+## Document final de l'etude (objectif principal)
+Le document `eco-action.png` est considere comme le livrable final principal de l'etude.
+
+![Plan d'action eco-conception](./eco-action.png)
+
 ## Objectifs
 - Conserver un rendu visuel tres proche du site source.
 - Ameliorer les scores Lighthouse (surtout Performance).
