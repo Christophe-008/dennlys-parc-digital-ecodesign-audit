@@ -1,229 +1,262 @@
-console.log('Welcome on Dennlys Parc');
-window.onload = () => {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker
-            .register('./../../sw.js')
-            .then((registration) => {
-                console.log(
-                    'Service Worker enregistré avec succès:',
-                    registration
-                );
-
-                registration.pushManager
-                    .subscribe({
-                        userVisibleOnly: true,
-                    })
-                    .then((subscription) => {
-                        console.log('Push subscription:', subscription);
-                    })
-                    .catch((error) => {
-                        console.error(
-                            "Échec de l'abonnement aux notifications push:",
-                            error
-                        );
-                    });
-            })
-            .catch((error) => {
-                console.error(
-                    "Échec de l'enregistrement du Service Worker:",
-                    error
-                );
-            });
-    }
-};
-
 import { attractions } from './attractions.js?v=2026.0.0';
+import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.esm.browser.min.js';
+
+const body = document.body;
 const btnMenu = document.getElementById('btnMenu');
 const navHeader = document.getElementById('navHeader');
 
-if (document.querySelectorAll('.rellax').length >= 1) {
-    const rellax = new Rellax('.rellax');
+function initServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('./../../sw.js')
+      .then((registration) =>
+        registration.pushManager.subscribe({ userVisibleOnly: true })
+      )
+      .catch(() => {
+        // Silent fail: service worker/push is non-blocking for core UX
+      });
+  });
 }
 
-/**
- * Navigation sub-menu
- */
-const allBtnSubMenu = document.querySelectorAll('.hasSubMenu');
-allBtnSubMenu.forEach((btnSubMenu) => {
-    btnSubMenu.addEventListener('click', function (e) {
-        e.stopPropagation();
-        if (this.classList.contains('active')) {
-            this.classList.remove('active');
-        } else {
-            allBtnSubMenu.forEach((element) => {
-                if (element.classList.contains('active')) {
-                    element.classList.remove('active');
-                }
-            });
-            this.classList.add('active');
-        }
-    });
-});
+function initRellax() {
+  if (document.querySelectorAll('.rellax').length < 1) return;
+  if (typeof window.Rellax !== 'function') return;
+  // eslint-disable-next-line no-new
+  new window.Rellax('.rellax');
+}
 
-document.querySelector('body').addEventListener('click', () => {
-    allBtnSubMenu.forEach((element) => {
-        if (element.classList.contains('active')) {
-            element.classList.remove('active');
-        }
-    });
-});
+function initSubMenus() {
+  const subMenus = document.querySelectorAll('.hasSubMenu');
+  if (!subMenus.length) return;
 
-btnMenu.addEventListener('click', function (e) {
+  subMenus.forEach((item) => {
+    item.addEventListener('click', (event) => {
+      event.stopPropagation();
+
+      const isActive = item.classList.contains('active');
+      subMenus.forEach((node) => node.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    });
+  });
+
+  body.addEventListener('click', () => {
+    subMenus.forEach((item) => item.classList.remove('active'));
+  });
+}
+
+function initMainMenu() {
+  if (!btnMenu || !navHeader) return;
+  btnMenu.addEventListener('click', () => {
     navHeader.classList.toggle('active');
-});
+  });
+}
 
-import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.esm.browser.min.js';
+function initCalendarSwiper() {
+  if (!document.querySelector('.swiperCalendar')) return;
 
-const swiper = new Swiper('.swiperCalendar', {
+  // eslint-disable-next-line no-new
+  new Swiper('.swiperCalendar', {
     loop: true,
     autoHeight: true,
     spaceBetween: 50,
     navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
     },
     pagination: {
-        el: '.swiper-pagination',
-        type: 'bullets',
-        clickable: true,
+      el: '.swiper-pagination',
+      type: 'bullets',
+      clickable: true,
     },
     breakpoints: {
-        // when window width is >= 320px
-        1024: {
-            autoHeight: false,
-        },
+      1024: { autoHeight: false },
     },
-});
-/**
- * ONLY PAGE ATTRACTIONS
- */
-if (document.querySelector('body').classList.contains('attractions')) {
-    const radioFilter = document.getElementsByName('categorie');
-    /* Toise */
-    filterSize.addEventListener('input', (e) => {
-        radioFilter.forEach((btnRadio) => {
-            btnRadio.checked = false;
-        });
-        const targetValue = e.target.value;
-        size.innerText = `${e.target.value} cm`;
-        const attractionsFilter = attractions.filter(
-            (attraction) =>
-                attraction.categorie != 'restaurant' &&
-                attraction.taille.min <= targetValue //&&attraction.taille.max >= targetValue
-        );
-        createListAttraction(attractionsFilter);
-    });
-    /* TEMPLATE */
-    const createListAttraction = (array) => {
-        count.innerHTML = `(${array.length})`;
-        listAttractions.innerHTML = '';
-        array.forEach((attraction) => {
-            // console.table(attraction);
-            const template = document.querySelector('#attraction');
+  });
+}
 
-            const clone = document.importNode(template.content, true);
-            const grid = clone.querySelector('.grid');
-            const displaySize = clone.querySelector('.displaySize');
-            const up = clone.querySelector('#up');
-            const img = clone.querySelector('.imgAttraction');
-            const h1 = clone.querySelector('.attractionName');
-            const cat = clone.querySelector('#cat');
-            let txtCat = '';
-            if (attraction.taille.min === null) {
-                displaySize.classList.add('hide');
-            }
-            switch (attraction.categorie) {
-                case 'enfant':
-                    txtCat = '<small>pour les</small><br><b>enfants</b>';
-                    break;
-                case 'famille':
-                    txtCat = '<small>pour la</small><br><b>famille</b>';
-                    break;
-                case 'sensation':
-                    txtCat = '<small>attraction</small><br><b>à sensations</b>';
-                    break;
-            }
-            const size = clone.querySelector('#sizeMin');
-            // const desc = clone.querySelector(".attractionDesc");
-            // const mapLink = clone.querySelector("#mapLink");
-            const singleLink = clone.querySelector('#single');
-            grid.classList.add(attraction.categorie);
-            attraction.sous_categorie &&
-                grid.classList.add(attraction.sous_categorie);
-            up.classList.add(attraction.categorie);
-            attraction.sous_categorie &&
-                up.classList.add(attraction.sous_categorie);
+function getAttractionsElements() {
+  return {
+    radioFilter: document.getElementsByName('categorie'),
+    filterSize: document.getElementById('filterSize'),
+    sizeLabel: document.getElementById('size'),
+    countLabel: document.getElementById('count'),
+    listAttractions: document.getElementById('listAttractions'),
+    template: document.querySelector('#attraction'),
+  };
+}
 
-            img.setAttribute(
-                'src',
-                `./../assets/images/attractions/${attraction.categorie}/${attraction.media.url_photo}/small/presentation_1.jpg`
-            );
-            img.setAttribute('alt', attraction.nom);
-            const pre_titre = attraction.pre_titre
-                ? `<span>${attraction.pre_titre}</span></span>`
-                : '';
-            h1.innerHTML = `${pre_titre} ${attraction.nom}`;
-            // desc.innerText = attraction.description;
-            // mapLink.setAttribute("href", `./plan.php?search=${attraction.nom}`);
-            cat.innerHTML = `<b>${txtCat}</b>`;
-            size.innerHTML = `<b>${attraction.taille.min}cm</b>`;
-            singleLink.setAttribute(
-                'href',
-                `./attraction.php?name=${attraction.media.url_photo}&cat=${attraction.categorie}`
-            );
-            listAttractions.appendChild(clone);
-        });
-    };
+function setAttractionCategoryLabel(container, category) {
+  const mapping = {
+    enfant: ['pour les', 'enfants'],
+    famille: ['pour la', 'famille'],
+    sensation: ['attraction', 'à sensations'],
+  };
 
-    /* BTN RADIO FILTER */
+  const [top, bottom] = mapping[category] || ['', ''];
+  container.replaceChildren();
+
+  const strong = document.createElement('b');
+  const small = document.createElement('small');
+  small.textContent = top;
+  strong.appendChild(small);
+  strong.appendChild(document.createElement('br'));
+  strong.appendChild(document.createTextNode(bottom));
+  container.appendChild(strong);
+}
+
+function buildAttractionTitle(node, attraction) {
+  node.replaceChildren();
+
+  if (attraction.pre_titre) {
+    const pre = document.createElement('span');
+    pre.textContent = attraction.pre_titre;
+    node.appendChild(pre);
+    node.appendChild(document.createTextNode(' '));
+  }
+
+  node.appendChild(document.createTextNode(attraction.nom || ''));
+}
+
+function createListAttraction(items, elements) {
+  const { countLabel, listAttractions, template } = elements;
+  if (!listAttractions || !template) return;
+
+  if (countLabel) {
+    countLabel.textContent = `(${items.length})`;
+  }
+
+  listAttractions.innerHTML = '';
+
+  items.forEach((attraction) => {
+    const clone = document.importNode(template.content, true);
+
+    const grid = clone.querySelector('.grid');
+    const displaySize = clone.querySelector('.displaySize');
+    const up = clone.querySelector('#up');
+    const img = clone.querySelector('.imgAttraction');
+    const title = clone.querySelector('.attractionName');
+    const cat = clone.querySelector('#cat');
+    const size = clone.querySelector('#sizeMin');
+    const singleLink = clone.querySelector('#single');
+
+    if (!grid || !up || !img || !title || !cat || !size || !singleLink) {
+      return;
+    }
+
+    if (attraction.taille?.min == null && displaySize) {
+      displaySize.classList.add('hide');
+    }
+
+    if (attraction.categorie) {
+      grid.classList.add(attraction.categorie);
+      up.classList.add(attraction.categorie);
+    }
+
+    if (attraction.sous_categorie) {
+      grid.classList.add(attraction.sous_categorie);
+      up.classList.add(attraction.sous_categorie);
+    }
+
+    img.src = `./../assets/images/attractions/${attraction.categorie}/${attraction.media.url_photo}/small/presentation_1.jpg`;
+    img.alt = attraction.nom || '';
+
+    buildAttractionTitle(title, attraction);
+    setAttractionCategoryLabel(cat, attraction.categorie);
+
+    const minSize = attraction.taille?.min;
+    size.textContent = minSize == null ? '' : `${minSize}cm`;
+
+    singleLink.href = `./attraction.php?name=${attraction.media.url_photo}&cat=${attraction.categorie}`;
+    listAttractions.appendChild(clone);
+  });
+}
+
+function initAttractionsPage() {
+  if (!body.classList.contains('attractions')) return;
+
+  const elements = getAttractionsElements();
+  const { radioFilter, filterSize, sizeLabel } = elements;
+
+  if (!radioFilter || !filterSize) return;
+
+  filterSize.addEventListener('input', (event) => {
     radioFilter.forEach((btnRadio) => {
-        btnRadio.addEventListener('change', () => {
-            /* INIT TOISE */
-            // filterSize.value = "80";
-            // size.innerText = "80 cm";
-            /* */
-            if (btnRadio.checked) {
-                // console.log(btnRadio.value);
-                if (btnRadio.value === 'all') {
-                    createListAttraction(
-                        attractions.filter(
-                            (attraction) => attraction.categorie != 'restaurant'
-                        )
-                    );
-                } else if (btnRadio.value === 'eau') {
-                    createListAttraction(
-                        attractions.filter(
-                            (attraction) =>
-                                attraction.sous_categorie === btnRadio.value
-                        )
-                    );
-                } else {
-                    createListAttraction(
-                        attractions.filter(
-                            (attraction) =>
-                                attraction.categorie === btnRadio.value
-                        )
-                    );
-                }
-            }
-        });
+      btnRadio.checked = false;
     });
 
-    createListAttraction(
-        attractions.filter((attraction) => attraction.categorie != 'restaurant')
+    const targetValue = Number(event.target.value);
+    if (sizeLabel) {
+      sizeLabel.textContent = `${targetValue} cm`;
+    }
+
+    const filtered = attractions.filter(
+      (attraction) =>
+        attraction.categorie !== 'restaurant' &&
+        Number(attraction.taille?.min || 0) <= targetValue
     );
+
+    createListAttraction(filtered, elements);
+  });
+
+  radioFilter.forEach((btnRadio) => {
+    btnRadio.addEventListener('change', () => {
+      if (!btnRadio.checked) return;
+
+      if (btnRadio.value === 'all') {
+        createListAttraction(
+          attractions.filter((attraction) => attraction.categorie !== 'restaurant'),
+          elements
+        );
+        return;
+      }
+
+      if (btnRadio.value === 'eau') {
+        createListAttraction(
+          attractions.filter(
+            (attraction) => attraction.sous_categorie === btnRadio.value
+          ),
+          elements
+        );
+        return;
+      }
+
+      createListAttraction(
+        attractions.filter((attraction) => attraction.categorie === btnRadio.value),
+        elements
+      );
+    });
+  });
+
+  createListAttraction(
+    attractions.filter((attraction) => attraction.categorie !== 'restaurant'),
+    elements
+  );
 }
 
-if (document.querySelector('body').classList.contains('acces')) {
-    const coord = [50.570559, 2.1551699];
-    var map = L.map('map', {
-        attributionControl: false,
-    }).setView(coord, 9);
+function initAccessMap() {
+  if (!body.classList.contains('acces')) return;
+  if (typeof window.L === 'undefined') return;
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        // attribution:
-        //   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+  const mapElement = document.getElementById('map');
+  if (!mapElement) return;
 
-    L.marker(coord).addTo(map).bindPopup('Dennlys Parc').openPopup();
+  const coord = [50.570559, 2.1551699];
+  const map = window.L.map('map', { attributionControl: false }).setView(coord, 9);
+
+  window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  window.L.marker(coord).addTo(map).bindPopup('Dennlys Parc').openPopup();
 }
+
+function initApp() {
+  initServiceWorker();
+  initRellax();
+  initSubMenus();
+  initMainMenu();
+  initCalendarSwiper();
+  initAttractionsPage();
+  initAccessMap();
+}
+
+initApp();

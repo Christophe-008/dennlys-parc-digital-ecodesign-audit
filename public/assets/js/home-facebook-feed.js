@@ -18,6 +18,9 @@ if (feedContainer) {
 
       const response = await fetch('./assets/data/facebook-feed.html', { cache: 'force-cache' });
       const markup = await response.text();
+      if (!markup.includes('class="cff-wrapper"')) {
+        throw new Error('Unexpected feed markup');
+      }
       feedContainer.innerHTML = markup;
 
       // required by cff.js runtime

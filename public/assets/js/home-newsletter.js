@@ -1,6 +1,15 @@
 const target = document.querySelector('#newsletter-form');
 
 if (target) {
+  const isSafeUrl = (value) => {
+    try {
+      const parsed = new URL(value, window.location.origin);
+      return ['http:', 'https:'].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
   const loadNewsletter = () => {
     if (target.dataset.loaded === 'true') return;
     target.dataset.loaded = 'true';
@@ -13,7 +22,9 @@ if (target) {
     iframe.setAttribute('marginwidth', '0');
     iframe.setAttribute('width', '100%');
     iframe.style.height = '0';
-    iframe.src = target.dataset.src || '';
+    const src = target.dataset.src || '';
+    if (!isSafeUrl(src)) return;
+    iframe.src = src;
     target.appendChild(iframe);
 
     const script = document.createElement('script');
