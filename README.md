@@ -6,8 +6,8 @@ Ce projet reproduit la page d'accueil de `dennlys-parc.com` dans Astro, puis app
 ## Projet deploye
 - https://dennlys-parc-digital-ecodesign-audi.vercel.app/
 
-## Document final de l'etude (objectif principal)
-Le document `eco-action.png` est considere comme le livrable final principal de l'etude.
+## Demonstration et resultat final du projet
+Le document `eco-action.png` presente la demonstration et la finalite du projet. Ce n'est pas une source de reference, mais la synthese du resultat obtenu.
 
 ![Plan d'action eco-conception](./eco-action.png)
 
