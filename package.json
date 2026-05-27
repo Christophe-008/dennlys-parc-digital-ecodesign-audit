@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "serve:lhci": "astro preview --host 127.0.0.1 --port 5173",
     "astro": "astro"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "npm run serve:lhci",
+      "startServerCommand": "pnpm run serve:lhci",
       "startServerReadyPattern": "http://127.0.0.1:5173",
       "url": [
         "http://127.0.0.1:5173/"
