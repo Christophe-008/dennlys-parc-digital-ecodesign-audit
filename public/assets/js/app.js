@@ -1,4 +1,3 @@
-import { attractions } from './attractions.js?v=2026.0.0';
 import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.esm.browser.min.js';
 
 const body = document.body;
@@ -11,11 +10,16 @@ function initServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('./../../sw.js')
-      .then((registration) =>
-        registration.pushManager.subscribe({ userVisibleOnly: true })
-      )
+    fetch('/sw.js', { method: 'HEAD' })
+      .then((response) => {
+        if (!response.ok) return null;
+
+        return navigator.serviceWorker
+          .register('/sw.js')
+          .then((registration) =>
+            registration.pushManager.subscribe({ userVisibleOnly: true })
+          );
+      })
       .catch(() => {
         // Silent fail: service worker/push is non-blocking for core UX
       });
@@ -98,7 +102,7 @@ function initCalendarSwiper() {
   calendarSwiperInstance = instance;
 }
 
-function getFilteredAttractionsByCategory(categoryValue) {
+function getFilteredAttractionsByCategory(attractions, categoryValue) {
   if (categoryValue === 'all') {
     return attractions.filter((attraction) => attraction.categorie !== 'restaurant');
   }
@@ -110,9 +114,9 @@ function getFilteredAttractionsByCategory(categoryValue) {
   return attractions.filter((attraction) => attraction.categorie === categoryValue);
 }
 
-function renderCategorySelection(btnRadio, elements) {
+function renderCategorySelection(btnRadio, elements, attractions) {
   if (!btnRadio.checked) return;
-  const filtered = getFilteredAttractionsByCategory(btnRadio.value);
+  const filtered = getFilteredAttractionsByCategory(attractions, btnRadio.value);
   createListAttraction(filtered, elements);
 }
 
@@ -239,7 +243,7 @@ function clearRadioSelection(radioFilter) {
   });
 }
 
-function filterAttractionsBySize(targetValue) {
+function filterAttractionsBySize(attractions, targetValue) {
   return attractions.filter(
     (attraction) =>
       attraction.categorie !== 'restaurant' &&
@@ -247,8 +251,20 @@ function filterAttractionsBySize(targetValue) {
   );
 }
 
-function initAttractionsPage() {
+async function loadAttractionsData() {
+  try {
+    const module = await import('./attractions.js?v=2026.0.0');
+    return Array.isArray(module.attractions) ? module.attractions : [];
+  } catch {
+    return [];
+  }
+}
+
+async function initAttractionsPage() {
   if (!body.classList.contains('attractions')) return;
+
+  const attractions = await loadAttractionsData();
+  if (!attractions.length) return;
 
   const elements = getAttractionsElements();
   const { radioFilter, filterSize, sizeLabel } = elements;
@@ -263,12 +279,12 @@ function initAttractionsPage() {
       sizeLabel.textContent = `${targetValue} cm`;
     }
 
-    createListAttraction(filterAttractionsBySize(targetValue), elements);
+    createListAttraction(filterAttractionsBySize(attractions, targetValue), elements);
   });
 
   radioFilter.forEach((btnRadio) => {
     btnRadio.addEventListener('change', () => {
-      renderCategorySelection(btnRadio, elements);
+      renderCategorySelection(btnRadio, elements, attractions);
     });
   });
 
@@ -298,7 +314,7 @@ function initApp() {
   initSubMenus();
   initMainMenu();
   initCalendarSwiper();
-  initAttractionsPage();
+  void initAttractionsPage();
   initAccessMap();
 }
 
