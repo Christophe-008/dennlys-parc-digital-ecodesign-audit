@@ -73,7 +73,10 @@ jobs:
             -e PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
             --name GreenIT-Analysis \
             greenit-analysis-cli \
-            greenit analyse /app/input/url.yaml /app/output/report.html --format html --max_tab=1 --timeout=60000 --retry=1 --headless true --language fr
+            greenit analyse /app/input/url.yaml /app/output/report.html --format html --max_tab=1 --timeout=60000 --retry=1 --headless true --language fr \
+            2>&1 | tee artifacts/greenit/greenit.log
+
+          test -s artifacts/greenit/output/report.html
 
       - name: Upload GreenIT report
         if: always()
@@ -88,7 +91,7 @@ jobs:
         run: |
           echo "### EcoIndex" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Pages measured: \`/\` and \`/products\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Pages measured: \`/\` (from scenario file)" >> "$GITHUB_STEP_SUMMARY"
           echo "- Scenario file: \`.github/greenit/scenarios.yaml\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- HTML report artifact: \`greenit-analysis-report\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Tool source: https://github.com/cnumr/GreenIT-Analysis-cli" >> "$GITHUB_STEP_SUMMARY"

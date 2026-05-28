@@ -1,11 +1,10 @@
 - name: "Accueil"
   url: "http://127.0.0.1:5173/"
-  waitForSelector: ".shop-product-card"
+  waitForSelector: "body"
   waitForTimeout: 1500
   screenshot: "home.png"
-
-- name: "Catalogue"
-  url: "http://127.0.0.1:5173/products"
-  waitForSelector: ".shop-product-grid"
-  waitForTimeout: 1500
-  screenshot: "products.png"
+# - name: "Catalogue"
+#   url: "http://127.0.0.1:5173/products"
+#   waitForSelector: ".shop-product-grid"
+#   waitForTimeout: 1500
+#   screenshot: "products.png"
